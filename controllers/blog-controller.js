@@ -75,7 +75,9 @@ export const deleteBlog = async (req, res, next) => {
     const id = req.params.id;
     let blog;
     try {
-        blog = await Blog.findByIdAndDelete(id);
+        blog = await Blog.findByIdAndDelete(id).populate('user');
+        await blog.user.blogs.pull(blog);
+        await blog.user.save();
     } catch (error) {
         console.log(error);
     }
