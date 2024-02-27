@@ -24,7 +24,9 @@ export const addBlog = async (req, res, next) => {
         return console.log(error);
     }
     if (!existingUser) {
-        return res.status(400).json({ message: 'Unable to find user by this ID' });
+        return res
+            .status(400)
+            .json({ message: 'Unable to find user by this ID' });
     }
     const blog = new Blog({ title, description, image, user });
     try {
@@ -40,7 +42,6 @@ export const addBlog = async (req, res, next) => {
     }
     return res.status(200).json({ blog });
 };
-
 
 export const updateBlog = async (req, res, next) => {
     const { title, description } = req.body;
@@ -85,4 +86,18 @@ export const deleteBlog = async (req, res, next) => {
         return res.status(500).json({ message: 'Unable to delete' });
     }
     return res.status(200).json({ message: 'Successfully deleted' });
+};
+
+export const getByUserId = async (req, res, next) => {
+    const userId = req.params.id;
+    let userBlogs;
+    try {
+        userBlogs = await User.findById(userId).populate('blogs');
+    } catch (error) {
+        return console.log(error);
+    }
+    if (!userBlogs) {
+        return res.status(404).json({ message: 'No Blogs Found' });
+    }
+    return res.status(200).json({ blogs: userBlogs });
 };
